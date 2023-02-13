@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 
-from draw import Draw
-from vector_helper import *
+from ..draw.draw import Draw
 
 
 class DrawMatplotlib(Draw):
@@ -46,6 +45,13 @@ class DrawMatplotlib(Draw):
         plt.draw()
         plt.gcf().canvas.draw_idle()
         plt.gcf().canvas.start_event_loop(dt)
+
+    def style(self, color, alpha, size):
+        if isinstance(color, tuple):
+            color = '#%02x%02x%02x' % color
+        self.color = color
+        self.alpha = alpha
+        self.size = size
 
     def point(self, p):
         self.ax.scatter([p[0]], [p[1]], [p[2]], color=self.color, alpha=self.alpha, s=self.size)

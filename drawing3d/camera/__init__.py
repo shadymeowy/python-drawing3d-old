@@ -1,7 +1,7 @@
-from camera_base import CameraBase
-from camera_orthographic import OrthographicCamera
-from camera_perspective import PerspectiveCamera
-from camera_simple import SimpleCamera
+from .base import CameraBase
+from .orthographic import OrthographicCamera
+from .perspective import PerspectiveCamera
+from .simple import SimpleCamera
 
 
 def camera(type='perspective', *args, **kwargs):

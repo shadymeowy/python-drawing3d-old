@@ -1,5 +1,5 @@
-from draw_base import DrawBase
-from vector_helper import *
+from .base import DrawBase
+from ..misc import *
 
 
 class Draw(DrawBase):
@@ -68,7 +68,7 @@ class Draw(DrawBase):
         self.lines((p1, p2, p3, p4, p1))
 
     def cube(self, p, n=NORMAL_XY):
-        n = np.array(n)
+        n = np.array(n, dtype=np.float64)
         n /= np.linalg.norm(n)
         v1, v2 = orthogonal_vectors(n)
         p = [

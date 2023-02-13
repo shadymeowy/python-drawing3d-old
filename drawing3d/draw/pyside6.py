@@ -4,19 +4,14 @@ import time
 import numpy as np
 import multiprocessing as mp
 
-try:
-    from PySide6.QtWidgets import *
-    from PySide6.QtGui import *
-    from PySide6.QtCore import *
-except:
-    from PySide2.QtWidgets import *
-    from PySide2.QtGui import *
-    from PySide2.QtCore import *
+from PySide6.QtWidgets import *
+from PySide6.QtGui import *
+from PySide6.QtCore import *
 
-from draw import Draw
-from camera import camera
-from vector_helper import *
-from proxy import ProxyInterface, ProxyHandler
+from ..draw.draw import Draw
+from ..camera import camera
+from ..misc import *
+from ..proxy import ProxyInterface
 
 COLOR_NAMES = {name: QColor.fromString(name) for name in QColor.colorNames()}
 CONTROL_KEYS = {
@@ -190,7 +185,7 @@ class DrawApp(Draw):
             self.painter.setPen(self.pen)
 
 
-class DrawQt(ProxyInterface):
+class DrawPySide6(ProxyInterface):
     def __init__(self, *args, **kwargs):
         Draw.__init__(self)
         self.queue = mp.Queue()
@@ -225,16 +220,3 @@ class DrawQt(ProxyInterface):
 
     def __exit__(self, *args):
         self.commit()
-
-
-if __name__ == "__main__":
-    d = DrawQt()
-    while True:
-        d.begin()
-        d.color = (255, 0, 0)
-        d.style((255, 0, 0), 1.0, 1)
-        d.line((0, 0, 0), (1, 1, 0))
-        d.circle((0, 0, 0), 1)
-        d.style((0, 255, 0), 1.0, 1)
-        d.cube((0, 0, 0), E_X)
-        d.end(1 / 60)

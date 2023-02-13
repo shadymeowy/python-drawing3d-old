@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.spatial.transform import Rotation as R
 
-from camera_base import CameraBase
+from .base import CameraBase
 
 
 class PerspectiveCamera(CameraBase):
