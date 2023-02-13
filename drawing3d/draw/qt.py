@@ -4,16 +4,13 @@ import time
 import numpy as np
 import multiprocessing as mp
 
-from PySide6.QtWidgets import *
-from PySide6.QtGui import *
-from PySide6.QtCore import *
-
 from ..draw.draw import Draw
 from ..camera import camera
 from ..misc import *
 from ..proxy import ProxyInterface
+from .qt_helper import *
 
-COLOR_NAMES = {name: QColor.fromString(name) for name in QColor.colorNames()}
+
 CONTROL_KEYS = {
     Qt.Key.Key_A: ((-0.1, 0, 0), (0, 0, 0)),
     Qt.Key.Key_D: ((0.1, 0, 0), (0, 0, 0)),
@@ -113,7 +110,7 @@ class DrawApp(Draw):
         self.widget.draw = self.draw
         self.widget.show()
         self.timer.start(1000 / 60)
-        self.app.exec()
+        app_exec(self.app)
 
     def update(self):
         pass
@@ -185,7 +182,7 @@ class DrawApp(Draw):
             self.painter.setPen(self.pen)
 
 
-class DrawPySide6(ProxyInterface):
+class DrawQt(ProxyInterface):
     def __init__(self, *args, **kwargs):
         Draw.__init__(self)
         self.queue = mp.Queue()

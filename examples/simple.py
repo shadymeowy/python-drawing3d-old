@@ -1,6 +1,6 @@
 from drawing3d import draw3d
 
-draw = draw3d(renderer='pyside6')
+draw = draw3d(renderer='qt')
 
 while True:
     draw.begin()

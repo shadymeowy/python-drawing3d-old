@@ -7,8 +7,13 @@ setup(
     author='Tolga Demirdal',
     url='https://github.com/shadymeowy/python-drawing3d',
     setup_requires=[],
-    install_requires=['numpy', 'scipy', 'PySide6'],
+    install_requires=['numpy', 'scipy'],
     packages=['drawing3d', 'drawing3d.draw', 'drawing3d.camera'],
     entry_points={
+    },
+    extras_require={
+        'qt5': ['PySide2'],
+        'qt6': ['PySide6'],
+        'matplotlib': ['matplotlib'],
     },
 )

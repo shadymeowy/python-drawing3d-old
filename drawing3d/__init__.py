@@ -1,13 +1,13 @@
 from .draw.draw import Draw
 
 
-def draw3d(*args, renderer='pyside6', **kwargs):
+def draw3d(*args, renderer='qt', **kwargs):
     renderer = renderer.lower()
-    if renderer == 'pyside6':
-        from .draw.pyside6 import DrawPySide6
-        return DrawPySide6()
+    if renderer == 'qt':
+        from .draw.qt import DrawQt
+        return DrawQt(*args, **kwargs)
     elif renderer == 'matplotlib':
         from .draw.matplotlib import DrawMatplotlib
-        return DrawMatplotlib()
+        return DrawMatplotlib(*args, **kwargs)
     else:
         raise ValueError('Unknown renderer: %s' % renderer)
