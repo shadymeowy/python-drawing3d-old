@@ -104,3 +104,8 @@ class Draw(DrawBase):
                 p3 = p + v1 * (x + dsize[0]) + v2 * (y + dsize[1])
                 p4 = p + v1 * x + v2 * (y + dsize[1])
                 self.quad(p1, p2, p3, p4)
+
+    def line_multi(self, p1, p2, count=10):
+        d = (p2 - p1) / count
+        for i in range(count):
+            self.line(p1 + d * i, p1 + d * (i + 1))
