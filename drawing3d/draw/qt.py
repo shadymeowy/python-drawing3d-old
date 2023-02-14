@@ -28,14 +28,14 @@ CONTROL_KEYS = {
 
 
 class QCanvas3D(QWidget):
-    def __init__(self, window_size=(700, 700), controls=True, cam_type='perspective', cam_args=(), parent=None):
+    def __init__(self, window_size=(700, 700), pos=(0, 0, 0), att=(0, 0, 0), controls=True, cam_type='perspective', cam_args=(), parent=None):
         super(QCanvas3D, self).__init__(parent)
         self.window_size = window_size
         self.controls = controls
         self.setMinimumSize(*window_size)
         self.cam = camera(cam_type, window_size, *cam_args)
-        self.cam.pos = np.array([0., 0., 3.])
-        self.cam.att = np.array([-180., 0., 0.])
+        self.cam.pos = np.array(pos, dtype=np.double)
+        self.cam.att = np.array(att, dtype=np.double)
         self.resize(self.cam.image_size[0], self.cam.image_size[1])
         self.pressed_keys = set()
 
