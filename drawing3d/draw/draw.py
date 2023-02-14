@@ -1,3 +1,5 @@
+from scipy.spatial.transform import Rotation as R
+
 from .base import DrawBase
 from ..misc import *
 
@@ -44,28 +46,14 @@ class Draw(DrawBase):
         self.lines(p_)
 
     def attitude(self, p, r, color=('red', 'green', 'blue')):
+        if not isinstance(r, R):
+            r = R.from_euler('xyz', r, degrees=True)
         self.style(color=color[0])
         self.arrow3(p, r.apply((1, 0, 0)))
         self.style(color=color[1])
         self.arrow3(p, r.apply((0, 1, 0)))
         self.style(color=color[2])
         self.arrow3(p, r.apply((0, 0, 1)))
-
-    def camera(self, p, r, vfov, hfov):
-        vec, vec_v, vec_h = perspective_get_vecs(r, vfov, hfov)
-        p1 = p + vec + vec_v + vec_h
-        p2 = p + vec + vec_v - vec_h
-        p3 = p + vec - vec_v - vec_h
-        p4 = p + vec - vec_v + vec_h
-        self.line(p, p + vec)
-        self.line(p, p1)
-        self.line(p, p2)
-        self.line(p, p3)
-        self.line(p, p4)
-        self.quad(p1, p2, p3, p4)
-        self.arrow(p + vec, vec_v)
-        self.arrow(p + vec, vec_h)
-        self.lines((p1, p2, p3, p4, p1))
 
     def cube(self, p, n=NORMAL_XY):
         n = np.array(n, dtype=np.float64)
