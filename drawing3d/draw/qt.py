@@ -12,12 +12,12 @@ from .qt_helper import *
 
 
 CONTROL_KEYS = {
-    Qt.Key.Key_A: ((-0.1, 0, 0), (0, 0, 0)),
-    Qt.Key.Key_D: ((0.1, 0, 0), (0, 0, 0)),
-    Qt.Key.Key_Space: ((0, -0.1, 0), (0, 0, 0)),
-    Qt.Key.Key_C: ((0, 0.1, 0), (0, 0, 0)),
-    Qt.Key.Key_W: ((0, 0, 0.1), (0, 0, 0)),
-    Qt.Key.Key_S: ((0, 0, -0.1), (0, 0, 0)),
+    Qt.Key.Key_A: ((-0.5, 0, 0), (0, 0, 0)),
+    Qt.Key.Key_D: ((0.5, 0, 0), (0, 0, 0)),
+    Qt.Key.Key_Space: ((0, -0.5, 0), (0, 0, 0)),
+    Qt.Key.Key_C: ((0, 0.5, 0), (0, 0, 0)),
+    Qt.Key.Key_W: ((0, 0, 0.5), (0, 0, 0)),
+    Qt.Key.Key_S: ((0, 0, -0.5), (0, 0, 0)),
     Qt.Key.Key_Up: ((0, 0, 0), (-1, 0, 0)),
     Qt.Key.Key_Down: ((0, 0, 0), (1, 0, 0)),
     Qt.Key.Key_Right: ((0, 0, 0), (0, -1, 0)),
@@ -28,14 +28,15 @@ CONTROL_KEYS = {
 
 
 class QCanvas3D(QWidget):
-    def __init__(self, window_size=(700, 700), pos=(0, 0, 0), att=(0, 0, 0), controls=True, cam_type='perspective', cam_args=(), parent=None):
+    def __init__(self, size=(700, 700), pos=(0, 0, 0), att=(0, 0, 0), controls=True, cam_type='perspective', name='', parent=None, **kwargs):
         super(QCanvas3D, self).__init__(parent)
-        self.window_size = window_size
+        self.window_size = size
         self.controls = controls
-        self.setMinimumSize(*window_size)
-        self.cam = camera(cam_type, window_size, *cam_args)
+        self.setMinimumSize(*size)
+        self.cam = camera(cam_type, size, **kwargs)
         self.cam.pos = np.array(pos, dtype=np.double)
         self.cam.att = np.array(att, dtype=np.double)
+        self.setWindowTitle(name)
         self.resize(self.cam.image_size[0], self.cam.image_size[1])
         self.pressed_keys = set()
 
@@ -217,3 +218,7 @@ class DrawQt(ProxyInterface):
 
     def __exit__(self, *args):
         self.commit()
+
+    def close(self):
+        self.process.terminate()
+        self.process.join()
