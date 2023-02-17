@@ -76,3 +76,9 @@ class DrawMatplotlib(Draw):
 
     def image4(self, image, ps):
         raise NotImplementedError
+
+    def set_image(self, image, key):
+        raise NotImplementedError
+    
+    def drop_image(self, key):
+        raise NotImplementedError

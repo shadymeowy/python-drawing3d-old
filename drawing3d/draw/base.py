@@ -39,3 +39,11 @@ class DrawBase(ABC):
     @ abstractmethod
     def image4(self, image, ps):
         pass
+
+    @ abstractmethod
+    def set_image(self, image, key):
+        pass
+
+    @ abstractmethod
+    def drop_image(self, key):
+        pass

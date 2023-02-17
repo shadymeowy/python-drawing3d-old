@@ -1,6 +1,5 @@
-import enum
+import os
 import time
-import queue
 
 import numpy as np
 import multiprocessing as mp
@@ -27,13 +26,23 @@ CONTROL_KEYS = {
     Qt.Key.Key_E: ((0, 0, 0), (0, 0, -1)),
 }
 
+if "NO_GL" in os.environ and os.environ["NO_GL"] == "1":
+    print("NO_GL is set, using QWidget instead of QOpenGLWidget")
+    WidgetClass = QWidget
+else:
+    WidgetClass = QOpenGLWidget
 
-class QCanvas3D(QWidget):
+
+class QCanvas3D(WidgetClass):
     def __init__(self, size=(700, 700), pos=(0, 0, 0), att=(0, 0, 0), controls=True, cam_type='perspective', name='', parent=None, **kwargs):
         super(QCanvas3D, self).__init__(parent)
         self.window_size = size
         self.controls = controls
-        self.setMinimumSize(*size)
+        if WidgetClass == QOpenGLWidget:
+            self.setAutoFillBackground(False)
+            fmt = QSurfaceFormat()
+            fmt.setSamples(8)
+            self.setFormat(fmt)
         self.cam = camera(cam_type, size, **kwargs)
         self.cam.pos = np.array(pos, dtype=np.double)
         self.cam.att = np.array(att, dtype=np.double)
@@ -46,7 +55,7 @@ class QCanvas3D(QWidget):
         painter.begin(self)
         painter.setRenderHints(QPainter.Antialiasing)
         painter.setRenderHints(QPainter.TextAntialiasing)
-        painter.setRenderHints(QPainter.SmoothPixmapTransform)
+        # painter.setRenderHints(QPainter.SmoothPixmapTransform)
         painter.fillRect(self.rect(), QBrush(QColor(255, 255, 255)))
         self.draw(painter, self.cam)
         painter.end()
@@ -83,6 +92,7 @@ class QCanvas3D(QWidget):
     def resizeEvent(self, e):
         self.cam.image_size = (self.width(), self.height())
         self.update()
+        super(QCanvas3D, self).resizeEvent(e)
 
     def update(self):
         for key in self.pressed_keys:
@@ -106,6 +116,7 @@ class DrawApp(Draw):
     def run(self, *args, **kwargs):
         self.cmd = []
         self.app = QApplication([])
+        self.image_buffer = {}
         self.timer = QTimer()
         self.timer.timeout.connect(self.tick)
         self.widget = QCanvas3D(*args, **kwargs)
@@ -166,6 +177,8 @@ class DrawApp(Draw):
         self.painter.drawText(*p, text)
 
     def image4(self, image, ps):
+        if isinstance(image, tuple):
+            image = self.image_buffer[image]
         image = np.array(image, dtype=np.uint8)
         w, h = image.shape[1], image.shape[0]
         if image.shape[2] == 3:
@@ -188,6 +201,12 @@ class DrawApp(Draw):
         self.painter.setTransform(QTransform.quadToQuad(src, qpoints))
         self.painter.drawImage(0, 0, image)
         self.painter.resetTransform()
+
+    def set_image(self, image, key):
+        self.image_buffer[key] = image
+
+    def drop_image(self, key):
+        self.image_buffer.pop(key)
 
     def begin(self):
         pass
@@ -227,9 +246,7 @@ class DrawQt(ProxyInterface):
     def _update(self):
         if self.queue.empty():
             return
-        while not self.queue.empty():
-            cmd = self.queue.get()
-        self.app.cmd = cmd
+        self.app.cmd = self.queue.get()
 
     def begin(self):
         pass
