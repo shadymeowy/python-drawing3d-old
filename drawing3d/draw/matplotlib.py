@@ -73,3 +73,6 @@ class DrawMatplotlib(Draw):
 
     def text(self, p, text):
         self.ax.text(p[0], p[1], p[2], text, color=self.color, alpha=self.alpha, size=self.size)
+
+    def image4(self, image, ps):
+        raise NotImplementedError

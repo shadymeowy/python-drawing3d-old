@@ -1,5 +1,6 @@
 import enum
 import time
+import queue
 
 import numpy as np
 import multiprocessing as mp
@@ -163,6 +164,30 @@ class DrawApp(Draw):
         if p is None:
             return
         self.painter.drawText(*p, text)
+
+    def image4(self, image, ps):
+        image = np.array(image, dtype=np.uint8)
+        w, h = image.shape[1], image.shape[0]
+        if image.shape[2] == 3:
+            image = QImage(image, w, h, QImage.Format_RGB888)
+        elif image.shape[2] == 4:
+            image = QImage(image, w, h, QImage.Format_RGBA8888)
+        else:
+            raise ValueError('Invalid image shape')
+        ps = self.cam.projects(ps)
+        if ps is None:
+            return
+        qpoints = [QPointF(p[0], p[1]) for p in ps]
+        w, h = image.width(), image.height()
+        src = QPolygonF([
+            QPointF(0, 0),
+            QPointF(w, 0),
+            QPointF(w, h),
+            QPointF(0, h),
+        ])
+        self.painter.setTransform(QTransform.quadToQuad(src, qpoints))
+        self.painter.drawImage(0, 0, image)
+        self.painter.resetTransform()
 
     def begin(self):
         pass

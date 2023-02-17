@@ -80,20 +80,45 @@ class Draw(DrawBase):
         for line in l:
             self.lines(line)
 
-    def plane(self, p, count=10, size=(10, 10), n=NORMAL_XY):
-        v1, v2 = orthogonal_vectors(n)
-        dsize = np.array(size) / count
-        x_n = np.arange(-size[0] / 2, size[0] / 2, dsize[0])
-        y_n = np.arange(-size[1] / 2, size[1] / 2, dsize[1])
-        for x in x_n:
-            for y in y_n:
-                p1 = p + v1 * x + v2 * y
-                p2 = p + v1 * (x + dsize[0]) + v2 * y
-                p3 = p + v1 * (x + dsize[0]) + v2 * (y + dsize[1])
-                p4 = p + v1 * x + v2 * (y + dsize[1])
-                self.quad(p1, p2, p3, p4)
+    def rect(self, p, size, v_x=E_X, v_y=E_Y):
+        v_x = np.array(v_x) * size[0] / 2
+        v_y = np.array(v_y) * size[1] / 2
+        p = np.array(p)
+        ps = [
+            p + v_x + v_y,
+            p + v_x - v_y,
+            p - v_x - v_y,
+            p - v_x + v_y
+        ]
+        self.quad(*ps)
+
+    def rect_multi(self, p, size, v_x=E_X, v_y=E_Y, count=10):
+        count //= 2
+        v_x = np.array(v_x)
+        v_y = np.array(v_y)
+        v_x /= np.linalg.norm(v_x)
+        v_y /= np.linalg.norm(v_y)
+        v_x = v_x * size[0] / count / 2
+        v_y = v_y * size[1] / count / 2
+        p = np.array(p)
+        for i in range(-count, count):
+            for j in range(-count, count):
+                ps = [
+                    p + v_x * i + v_y * j,
+                    p + v_x * (i + 1) + v_y * j,
+                    p + v_x * (i + 1) + v_y * (j + 1),
+                    p + v_x * i + v_y * (j + 1)
+                ]
+                self.quad(*ps)
 
     def line_multi(self, p1, p2, count=10):
         d = (p2 - p1) / count
         for i in range(count):
             self.line(p1 + d * i, p1 + d * (i + 1))
+
+    def image(self, image, p, size, v_x=E_X, v_y=E_Y):
+        v_x = np.array(v_x) * size[0]
+        v_y = np.array(v_y) * size[1]
+        p = np.array(p)
+        ps = [p, p + v_x, p + v_x + v_y, p + v_y]
+        self.image4(image, ps)

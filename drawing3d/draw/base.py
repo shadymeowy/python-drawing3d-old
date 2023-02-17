@@ -35,3 +35,7 @@ class DrawBase(ABC):
     @ abstractmethod
     def text(self, p, text):
         pass
+    
+    @ abstractmethod
+    def image4(self, image, ps):
+        pass
