@@ -244,22 +244,32 @@ class DrawQt(ProxyInterface):
     def __init__(self, *args, **kwargs):
         Draw.__init__(self)
         self.queue = mp.Queue()
+        self.queue_res = mp.Queue()
         ProxyInterface.__init__(self, DrawApp, self.queue)
-        args = (self.queue, args, kwargs)
+        args = (self.queue, self.queue_res, args, kwargs)
         self.process = mp.Process(target=self._run, args=args)
         self.process.daemon = True
         self.process.start()
 
-    def _run(self, queue, args, kwargs):
+    def _run(self, queue, queue_res, args, kwargs):
         self.queue = queue
+        self.queue_res = queue_res
         self.app = DrawApp()
         self.app.update = self._update
         self.app.run(*args, **kwargs)
 
     def _update(self):
+        if not self.queue_res.empty():
+            res = self.queue_res.get()
+            if res[1] is None:
+                del self.app.image_buffer[res[0]]
+            else:
+                self.app.image_buffer[res[0]] = res[1]
         if self.queue.empty():
             return
-        self.app.cmd = self.queue.get()
+        while not self.queue.empty():
+            cmd = self.queue.get()
+        self.app.cmd = cmd
 
     def begin(self):
         pass
@@ -277,3 +287,9 @@ class DrawQt(ProxyInterface):
     def close(self):
         self.process.terminate()
         self.process.join()
+
+    def set_image(self, image, key):
+        self.queue_res.put((key, image))
+
+    def drop_image(self, key):
+        self.queue_res.put((key, None))
