@@ -34,15 +34,27 @@ else:
 
 
 class QCanvas3D(WidgetClass):
-    def __init__(self, size=(700, 700), pos=(0, 0, 0), att=(0, 0, 0), controls=True, cam_type='perspective', name='', parent=None, **kwargs):
+    def __init__(
+            self,
+            size=(700, 700),
+            pos=(0, 0, 0),
+            att=(0, 0, 0),
+            controls=True,
+            cam_type='perspective',
+            name='',
+            parent=None,
+            antialias=True,
+            **kwargs):
         super(QCanvas3D, self).__init__(parent)
         self.window_size = size
         self.controls = controls
+        self.antialias = antialias
         if WidgetClass == QOpenGLWidget:
             self.setAutoFillBackground(False)
-            fmt = QSurfaceFormat()
-            fmt.setSamples(8)
-            self.setFormat(fmt)
+            if self.antialias:
+                fmt = QSurfaceFormat()
+                fmt.setSamples(8)
+                self.setFormat(fmt)
         self.cam = camera(cam_type, size, **kwargs)
         self.cam.pos = np.array(pos, dtype=np.double)
         self.cam.att = np.array(att, dtype=np.double)
@@ -53,9 +65,10 @@ class QCanvas3D(WidgetClass):
     def paintEvent(self, e):
         painter = QPainter()
         painter.begin(self)
-        painter.setRenderHints(QPainter.Antialiasing)
-        painter.setRenderHints(QPainter.TextAntialiasing)
-        # painter.setRenderHints(QPainter.SmoothPixmapTransform)
+        if self.antialias:
+            painter.setRenderHints(QPainter.Antialiasing)
+            painter.setRenderHints(QPainter.TextAntialiasing)
+            painter.setRenderHints(QPainter.SmoothPixmapTransform)
         painter.fillRect(self.rect(), QBrush(QColor(255, 255, 255)))
         self.draw(painter, self.cam)
         painter.end()
