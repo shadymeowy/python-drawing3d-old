@@ -29,8 +29,10 @@ CONTROL_KEYS = {
 if "NO_GL" in os.environ and os.environ["NO_GL"] == "1":
     print("NO_GL is set, using QWidget instead of QOpenGLWidget")
     WidgetClass = QWidget
+    USE_GL = False
 else:
     WidgetClass = QOpenGLWidget
+    USE_GL = True
 
 
 class QCanvas3D(WidgetClass):
@@ -49,7 +51,7 @@ class QCanvas3D(WidgetClass):
         self.window_size = size
         self.controls = controls
         self.antialias = antialias
-        if WidgetClass == QOpenGLWidget:
+        if USE_GL:
             self.setAutoFillBackground(False)
             if self.antialias:
                 fmt = QSurfaceFormat()
@@ -137,9 +139,6 @@ class DrawApp(Draw):
         self.widget.show()
         self.timer.start(1000 / 60)
         app_exec(self.app)
-
-    def update(self):
-        pass
 
     def tick(self):
         self.update()
