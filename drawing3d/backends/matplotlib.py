@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from ..draw.draw import Draw
+from ..backends.draw import Draw
 
 
 class DrawMatplotlib(Draw):

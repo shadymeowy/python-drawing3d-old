@@ -4,7 +4,7 @@ import time
 import numpy as np
 import multiprocessing as mp
 
-from ..draw.draw import Draw
+from ..backends.draw import Draw
 from ..camera import camera
 from ..misc import *
 from ..proxy import ProxyInterface
