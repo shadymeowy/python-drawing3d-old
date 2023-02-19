@@ -7,7 +7,7 @@ class DrawBase(ABC):
         self.alpha = 1.0
         self.size = 1
 
-    def style(self, color, alpha=1.0, size=1):
+    def style(self, color, alpha=1.0, size=1.0):
         self.color = color
         self.alpha = alpha
         self.size = size

@@ -138,7 +138,7 @@ class DrawApp(Draw):
         for cmd in self.cmd:
             getattr(self, cmd[0])(*cmd[1], **cmd[2])
 
-    def style(self, color='black', alpha=1.0, size=1):
+    def style(self, color='black', alpha=1.0, size=1.0):
         self.size = size
         self.color = color
         self.alpha = alpha
