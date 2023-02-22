@@ -190,6 +190,8 @@ class DrawApp(Draw):
 
     def image4(self, image, ps):
         if isinstance(image, tuple):
+            if image not in self.image_buffer:
+                return
             image = self.image_buffer[image]
         image = np.array(image, dtype=np.uint8)
         w, h = image.shape[1], image.shape[0]
