@@ -8,7 +8,7 @@ setup(
     url='https://github.com/shadymeowy/python-drawing3d',
     setup_requires=[],
     install_requires=['numpy', 'scipy'],
-    packages=['drawing3d', 'drawing3d.draw', 'drawing3d.camera'],
+    packages=['drawing3d', 'drawing3d.backends', 'drawing3d.camera'],
     entry_points={
     },
     extras_require={
