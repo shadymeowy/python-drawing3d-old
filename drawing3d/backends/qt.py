@@ -244,32 +244,32 @@ class DrawApp(Draw):
 class DrawQt(ProxyInterface):
     def __init__(self, *args, **kwargs):
         Draw.__init__(self)
-        self.queue = mp.Queue()
-        self.queue_res = mp.Queue()
-        ProxyInterface.__init__(self, DrawApp, self.queue)
-        args = (self.queue, self.queue_res, args, kwargs)
+        self.conn1, self.conn2 = mp.Pipe()
+        self.conn1_res, self.conn2_res = mp.Pipe()
+        ProxyInterface.__init__(self, DrawApp, self.conn1)
+        args = (self.conn2, self.conn2_res, args, kwargs)
         self.process = mp.Process(target=self._run, args=args)
         self.process.daemon = True
         self.process.start()
 
-    def _run(self, queue, queue_res, args, kwargs):
-        self.queue = queue
-        self.queue_res = queue_res
+    def _run(self, conn2, conn2_res, args, kwargs):
+        self.conn2 = conn2
+        self.conn2_res = conn2_res
         self.app = DrawApp()
         self.app.update = self._update
         self.app.run(*args, **kwargs)
 
     def _update(self):
-        if not self.queue_res.empty():
-            res = self.queue_res.get()
+        if self.conn2_res.poll():
+            res = self.conn2_res.recv()
             if res[1] is None:
                 del self.app.image_buffer[res[0]]
             else:
                 self.app.image_buffer[res[0]] = res[1]
-        if self.queue.empty():
+        if not self.conn2.poll():
             return
-        while not self.queue.empty():
-            cmd = self.queue.get()
+        while self.conn2.poll():
+            cmd = self.conn2.recv()
         self.app.cmd = cmd
 
     def begin(self):
@@ -290,7 +290,7 @@ class DrawQt(ProxyInterface):
         self.process.join()
 
     def set_image(self, image, key):
-        self.queue_res.put((key, image))
+        self.conn1_res.send((key, image))
 
     def drop_image(self, key):
-        self.queue_res.put((key, None))
+        self.conn1_res.send((key, None))
