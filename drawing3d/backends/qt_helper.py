@@ -5,7 +5,10 @@ try:
     from PySide6.QtOpenGL import *
     from PySide6.QtOpenGLWidgets import *
 
-    COLOR_NAMES = {name: QColor.fromString(name) for name in QColor.colorNames()}
+    try:
+        COLOR_NAMES = {name: QColor(name) for name in QColor.colorNames()}
+    except:
+        COLOR_NAMES = {name: QColor.fromString(name) for name in QColor.colorNames()}
 
     def app_exec(app):
         getattr(app, 'exec')()
